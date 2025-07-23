@@ -1,10 +1,13 @@
 // app/services/page.jsx or page.tsx
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect, { collectionNameObj } from "@/lib/dbConnect";
 import Image from "next/image";
+import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 const ServicesPage = async () => {
-  const services = await dbConnect('text_services').find().toArray()
+  const services = await dbConnect(collectionNameObj?.servicesCollection)
+    .find({})
+    .toArray();
   console.log(services);
 
   return (
@@ -37,7 +40,10 @@ const ServicesPage = async () => {
 
             {/* Arrow Icon */}
             <div className="mt-2 flex justify-end">
-              <FaArrowRight className="text-[#FF3811] text-base md:text-lg" />
+              <Link href={`/services/${service._id}`} className="">
+                {" "}
+                <FaArrowRight className="text-[#FF3811] text-base md:text-lg" />
+              </Link>
             </div>
           </div>
         ))}
