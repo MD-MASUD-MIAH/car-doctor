@@ -57,38 +57,25 @@ export const authOption = {
     signIn: "/login",
   },
 
-  callbacks:{
+  callbacks: {
+  async signIn({ user, account, profile, email, credentials }) {
+    console.log({ user, account, profile, email, credentials });
 
-    async signIn({user,account,profile,email,credentials}){
+    if (account) {
+      const { providerAccountId, provider } = account;
+      const { email: user_email, image, name } = user;
 
+      const userCollection = dbConnect(collectionNameObj.userCollection);
+      const isExist = await userCollection.findOne({ providerAccountId });
 
-
-      console.log({user,account,profile,email,credentials});
-
-      if(account){
-
-        const {providerAccountId,provider} = account 
-
-        const {email:user_email,image,name
-        } = user
-
-
-        const userCollection = dbConnect(collectionNameObj.userCollection) 
-        const isExit = await userCollection.findOne({providerAccountId})
-
-
-        if(!isExit){
-
-          const payload = {providerAccountId,provider,email:user_email,image,name}
-
-          await userCollection.insertOne(payload)
-        }
-
+      if (!isExist) {
+        const payload = { providerAccountId, provider, email: user_email, image, name };
+        await userCollection.insertOne(payload);
       }
-      
-
-
-
     }
+
+    // ✅ THIS LINE IS CRITICAL
+    return true;
   }
+}
 };

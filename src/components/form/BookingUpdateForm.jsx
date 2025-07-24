@@ -1,11 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export const CheckoutForm = ({ data }) => {
+export const BookingUpdateForm = ({ data }) => {
   const { data: session } = useSession();
-
+  const router = useRouter();
   console.log(session, data);
 
   const handleBookService = async (e) => {
@@ -13,16 +14,15 @@ export const CheckoutForm = ({ data }) => {
     e.preventDefault();
 
     const form = e.target;
-    const name = form.name.value;
+
     const date = form.date.value;
     const phone = form.phone.value;
     const address = form.address.value;
-    const email = form.email.value;
 
     const bookingPayload = {
       // Session
-      customerName: name,
-      email,
+      //   customerName: name,
+      //   email,
 
       // User Inputs
       date,
@@ -30,20 +30,24 @@ export const CheckoutForm = ({ data }) => {
       address,
 
       // Extra information
-      service_id: data._id,
-      service_name: data.title,
-      service_img: data.img,
-      service_price: data.price,
+      //   service_id: data._id,
+      //   service_name: data.title,
+      //   service_img: data.img,
+      //   service_price: data.price,
     };
 
     console.log("final data", bookingPayload);
 
-    const res = await fetch("https://cardoctor-mocha.vercel.app/api/service", {
-      method: "POST",
-      body: JSON.stringify(bookingPayload),
-    });
+    const res = await fetch(
+      `https://cardoctor-mocha.vercel.app/api/my-bookings/${data._id}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(bookingPayload),
+      }
+    );
     const postedResponse = await res.json();
-    console.log("POSTED DATA", postedResponse);
+    router.push("/my-bookings");
+    console.log("Update data response", postedResponse);
   };
 
   return (
@@ -99,7 +103,7 @@ export const CheckoutForm = ({ data }) => {
                 <span className="absolute left-3 top-3 text-gray-500">$</span>
                 <input
                   type="text"
-                  defaultValue={data?.price}
+                  defaultValue={data?.service_price}
                   readOnly
                   name="price"
                   className="w-full pl-8 px-4 py-3 rounded-lg border border-gray-300 bg-gray-50"
@@ -113,6 +117,7 @@ export const CheckoutForm = ({ data }) => {
                 Date
               </label>
               <input
+                defaultValue={data?.date}
                 type="date"
                 name="date"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#FF3811] focus:border-transparent"
@@ -128,6 +133,7 @@ export const CheckoutForm = ({ data }) => {
               <input
                 type="tel"
                 name="phone"
+                defaultValue={data?.phone}
                 placeholder="+1 (555) 123-4567"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#FF3811] focus:border-transparent"
                 required
@@ -141,6 +147,7 @@ export const CheckoutForm = ({ data }) => {
               </label>
               <input
                 type="text"
+                defaultValue={data?.address}
                 name="address"
                 placeholder="123 Main St, City, Country"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#FF3811] focus:border-transparent"

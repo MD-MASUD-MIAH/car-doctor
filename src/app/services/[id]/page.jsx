@@ -6,7 +6,9 @@ async function ServicesDetailsPage({ params }) {
 
   console.log(p.id);
 
-  const res = await fetch(`http://localhost:3000/api/service/${p.id}`);
+  const res = await fetch(
+    `https://cardoctor-mocha.vercel.app/api/service/${p.id}`
+  );
 
   if (!res.ok) {
     const errorText = await res.text();
